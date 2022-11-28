@@ -16,15 +16,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.eloemi.todo.detail.ui.theme.ToDoEloiseEmilieTheme
+import com.eloemi.todo.tasklist.Task
+import java.util.*
 
 class DetailActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val newTask = Task(id = UUID.randomUUID().toString(), title = "New Task !")
+        val onValidate = { task : Task -> Unit
+            intent.putExtra("task", task);
+            setResult(RESULT_OK, intent);
+            finish()
+        }
         setContent {
             ToDoEloiseEmilieTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-                    Detail("Android")
+                    Detail(onValidate, newTask)
                 }
             }
         }
@@ -32,13 +41,13 @@ class DetailActivity : ComponentActivity() {
 }
 
 @Composable
-fun Detail(name: String) {
+fun Detail(onValidate: (Task) -> Unit, newTask: Task) {
     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text("Task Detail", style = MaterialTheme.typography.h3)
         Text("title")
         Text("description")
-        Button(onClick = { /*TODO*/ }) {
-            
+        Button(onClick = { onValidate(newTask) }) {
+            Text("Validate")
         }
     }
 }
@@ -47,6 +56,6 @@ fun Detail(name: String) {
 @Composable
 fun DetailPreview() {
     ToDoEloiseEmilieTheme {
-        Detail("Android")
+        //Detail("Android")
     }
 }
