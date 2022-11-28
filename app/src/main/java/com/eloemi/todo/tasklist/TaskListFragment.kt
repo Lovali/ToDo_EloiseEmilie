@@ -24,7 +24,9 @@ class TaskListFragment : Fragment() {
     private val adapter = TaskListAdapter()
     private lateinit var binding : FragmentTaskListBinding
     val createTask = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        // dans cette callback on récupèrera la task et on l'ajoutera à la liste
+        val task = result.data?.getSerializableExtra("task") as Task
+        taskList = (taskList + task)
+        refreshAdapter()
     }
 
     override fun onCreateView(

@@ -7,11 +7,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -41,12 +38,13 @@ class DetailActivity : ComponentActivity() {
 }
 
 @Composable
-fun Detail(onValidate: (Task) -> Unit, newTask: Task) {
+fun Detail(onValidate: (Task) -> Unit, initialTask: Task) {
+    var task by remember { mutableStateOf(initialTask) } // faire les imports suggérés par l'IDE
     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text("Task Detail", style = MaterialTheme.typography.h3)
-        Text("title")
-        Text("description")
-        Button(onClick = { onValidate(newTask) }) {
+        OutlinedTextField(value = task.title, onValueChange = {task = task.copy(title = it)}, label = { Text(text = "Title")})
+        OutlinedTextField(value = task.description, onValueChange = {task = task.copy(description = it)}, label = { Text(text = "Description")})
+        Button(onClick = { onValidate(task) }) {
             Text("Validate")
         }
     }
