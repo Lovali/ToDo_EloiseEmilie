@@ -3,6 +3,7 @@ package com.eloemi.todo.tasklist
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -22,13 +23,17 @@ object TasksDiffCallback : DiffUtil.ItemCallback<Task>() {
 
 class TaskListAdapter : ListAdapter<Task, TaskListAdapter.TaskViewHolder>(TasksDiffCallback) {
 
+    var onClickDelete: (Task) -> Unit = {}
+
     // on utilise `inner` ici afin d'avoir accès aux propriétés de l'adapter directement
     inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(taskTitle: Task) {
+        fun bind(task: Task) {
             val textView = itemView.findViewById<TextView>(R.id.task_title)
-            textView.text = taskTitle.title
+            textView.text = task.title
             val secondTextView = itemView.findViewById<TextView>(R.id.task_description)
-            secondTextView.text = taskTitle.description
+            secondTextView.text = task.description
+            val deleteButton = itemView.findViewById<ImageButton>(R.id.imageButton2)
+            deleteButton.setOnClickListener { onClickDelete(task) }
         }
     }
 

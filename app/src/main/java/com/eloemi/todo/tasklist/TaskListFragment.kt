@@ -29,6 +29,10 @@ class TaskListFragment : Fragment() {
         binding = FragmentTaskListBinding.inflate(layoutInflater)
         val rootView = binding.root
         adapter.submitList(taskList)
+        adapter.onClickDelete = { task ->
+            taskList = taskList - task;
+            refreshAdapter()
+        }
         return rootView
     }
 
@@ -44,5 +48,7 @@ class TaskListFragment : Fragment() {
             taskList = taskList + newTask
             refreshAdapter()
         }
+
+
     }
 }
