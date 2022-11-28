@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.eloemi.todo.R
@@ -22,6 +23,9 @@ class TaskListFragment : Fragment() {
     )
     private val adapter = TaskListAdapter()
     private lateinit var binding : FragmentTaskListBinding
+    val createTask = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        // dans cette callback on récupèrera la task et on l'ajoutera à la liste
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,7 +54,7 @@ class TaskListFragment : Fragment() {
             //taskList = taskList + newTask
             //refreshAdapter()
             val intent = Intent(context, DetailActivity::class.java)
-            startActivity(intent)
+            createTask.launch(intent)
         }
 
 
