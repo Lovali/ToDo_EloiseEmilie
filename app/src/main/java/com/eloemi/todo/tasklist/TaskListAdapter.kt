@@ -24,6 +24,7 @@ object TasksDiffCallback : DiffUtil.ItemCallback<Task>() {
 class TaskListAdapter : ListAdapter<Task, TaskListAdapter.TaskViewHolder>(TasksDiffCallback) {
 
     var onClickDelete: (Task) -> Unit = {}
+    var onClickEdit: (Task) -> Unit = {}
 
     // on utilise `inner` ici afin d'avoir accès aux propriétés de l'adapter directement
     inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -34,6 +35,8 @@ class TaskListAdapter : ListAdapter<Task, TaskListAdapter.TaskViewHolder>(TasksD
             secondTextView.text = task.description
             val deleteButton = itemView.findViewById<ImageButton>(R.id.imageButton2)
             deleteButton.setOnClickListener { onClickDelete(task) }
+            val editButton = itemView.findViewById<ImageButton>(R.id.imageButton)
+            editButton.setOnClickListener { onClickEdit(task) }
         }
     }
 

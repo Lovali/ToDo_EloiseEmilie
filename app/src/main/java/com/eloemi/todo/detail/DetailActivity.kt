@@ -21,7 +21,8 @@ class DetailActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val newTask = Task(id = UUID.randomUUID().toString(), title = "New Task !")
-        val onValidate = { task : Task -> Unit
+        val task = intent.getSerializableExtra("task") as Task?
+        val onValidate = { task : Task? -> Unit
             intent.putExtra("task", task);
             setResult(RESULT_OK, intent);
             finish()
@@ -30,7 +31,8 @@ class DetailActivity : ComponentActivity() {
             ToDoEloiseEmilieTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-                    Detail(onValidate, newTask)
+                    if (task == null) Detail(onValidate, newTask)
+                    else Detail(onValidate, task)
                 }
             }
         }
@@ -38,12 +40,13 @@ class DetailActivity : ComponentActivity() {
 }
 
 @Composable
-fun Detail(onValidate: (Task) -> Unit, initialTask: Task) {
+fun Detail(onValidate: (Task?) -> Unit, initialTask: Task?) {
     var task by remember { mutableStateOf(initialTask) } // faire les imports suggérés par l'IDE
     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text("Task Detail", style = MaterialTheme.typography.h3)
-        OutlinedTextField(value = task.title, onValueChange = {task = task.copy(title = it)}, label = { Text(text = "Title")})
-        OutlinedTextField(value = task.description, onValueChange = {task = task.copy(description = it)}, label = { Text(text = "Description")})
+        OutlinedTextField(value = task?.id ?: UUID.randomUUID().toString(), onValueChange = {task = task?.copy(id = it)}, label = { Text(text = "Id")})
+        OutlinedTextField(value = task?.title ?:"New task", onValueChange = {task = task?.copy(title = it)}, label = { Text(text = "Title")})
+        OutlinedTextField(value = task?.description ?:"This is a new task", onValueChange = {task = task?.copy(description = it)}, label = { Text(text = "Description")})
         Button(onClick = { onValidate(task) }) {
             Text("Validate")
         }

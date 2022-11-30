@@ -25,7 +25,12 @@ class TaskListFragment : Fragment() {
     private lateinit var binding : FragmentTaskListBinding
     val createTask = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val task = result.data?.getSerializableExtra("task") as Task
-        taskList = (taskList + task)
+        taskList = (taskList + task!!)
+        refreshAdapter()
+    }
+    val editTask = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        val task = result.data?.getSerializableExtra("task") as Task
+        taskList = taskList.map { if (it.id == task.id) task else it }
         refreshAdapter()
     }
 
@@ -40,6 +45,11 @@ class TaskListFragment : Fragment() {
         adapter.onClickDelete = { task ->
             taskList = taskList - task;
             refreshAdapter()
+        }
+        adapter.onClickEdit = { task ->
+            val intent = Intent(context, DetailActivity::class.java)
+            intent.putExtra("task", task)
+            editTask.launch(intent)
         }
         return rootView
     }
