@@ -10,6 +10,10 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.eloemi.todo.R
 
+interface TaskListListener {
+    fun onClickDelete(task: Task)
+    fun onClickEdit(task: Task)
+}
 
 object TasksDiffCallback : DiffUtil.ItemCallback<Task>() {
     override fun areItemsTheSame(oldItem: Task, newItem: Task) : Boolean {
@@ -21,10 +25,10 @@ object TasksDiffCallback : DiffUtil.ItemCallback<Task>() {
     }
 }
 
-class TaskListAdapter : ListAdapter<Task, TaskListAdapter.TaskViewHolder>(TasksDiffCallback) {
+class TaskListAdapter(val listener: TaskListListener) : ListAdapter<Task, TaskListAdapter.TaskViewHolder>(TasksDiffCallback) {
 
-    var onClickDelete: (Task) -> Unit = {}
-    var onClickEdit: (Task) -> Unit = {}
+    /*var onClickDelete: (Task) -> Unit = {}
+    var onClickEdit: (Task) -> Unit = {}*/
 
     // on utilise `inner` ici afin d'avoir accès aux propriétés de l'adapter directement
     inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -34,9 +38,9 @@ class TaskListAdapter : ListAdapter<Task, TaskListAdapter.TaskViewHolder>(TasksD
             val secondTextView = itemView.findViewById<TextView>(R.id.task_description)
             secondTextView.text = task.description
             val deleteButton = itemView.findViewById<ImageButton>(R.id.imageButton2)
-            deleteButton.setOnClickListener { onClickDelete(task) }
+            deleteButton.setOnClickListener { listener.onClickDelete(task) }
             val editButton = itemView.findViewById<ImageButton>(R.id.imageButton)
-            editButton.setOnClickListener { onClickEdit(task) }
+            editButton.setOnClickListener { listener.onClickEdit(task) }
         }
     }
 

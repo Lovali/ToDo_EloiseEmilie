@@ -21,7 +21,19 @@ class TaskListFragment : Fragment() {
         Task(id = "id_2", title = "Task 2"),
         Task(id = "id_3", title = "Task 3")
     )
-    private val adapter = TaskListAdapter()
+    val adapterListener : TaskListListener = object : TaskListListener {
+        override fun onClickDelete(task: Task) {
+            taskList = taskList - task;
+            refreshAdapter()
+        }
+
+        override fun onClickEdit(task: Task) {
+            val intent = Intent(context, DetailActivity::class.java)
+            intent.putExtra("task", task)
+            editTask.launch(intent)
+        }
+    }
+    private val adapter = TaskListAdapter(adapterListener)
     private lateinit var binding : FragmentTaskListBinding
     val createTask = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val task = result.data?.getSerializableExtra("task") as Task
@@ -42,7 +54,7 @@ class TaskListFragment : Fragment() {
         binding = FragmentTaskListBinding.inflate(layoutInflater)
         val rootView = binding.root
         adapter.submitList(taskList)
-        adapter.onClickDelete = { task ->
+        /*adapter.onClickDelete = { task ->
             taskList = taskList - task;
             refreshAdapter()
         }
@@ -50,7 +62,7 @@ class TaskListFragment : Fragment() {
             val intent = Intent(context, DetailActivity::class.java)
             intent.putExtra("task", task)
             editTask.launch(intent)
-        }
+        }*/
         return rootView
     }
 
