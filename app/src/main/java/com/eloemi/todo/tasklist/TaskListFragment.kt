@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.eloemi.todo.R
 import com.eloemi.todo.data.Api
@@ -45,6 +46,7 @@ class TaskListFragment : Fragment() {
         taskList = taskList.map { if (it.id == task.id) task else it }
         refreshAdapter()
     }
+    private val viewModel: TasksListViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -80,6 +82,13 @@ class TaskListFragment : Fragment() {
             val intent = Intent(context, DetailActivity::class.java)
             createTask.launch(intent)
         }
+        lifecycleScope.launch { // on lance une coroutine car `collect` est `suspend`
+            viewModel.tasksStateFlow.collect { newList ->
+                // cette lambda est executée à chaque fois que la liste est mise à jour dans le VM
+                taskList = newList
+                refreshAdapter()
+            }
+        }
 
 
     }
@@ -89,6 +98,7 @@ class TaskListFragment : Fragment() {
         lifecycleScope.launch {
             mySuspendMethod()
         }
+        viewModel.refresh()
     }
 
     private suspend fun mySuspendMethod() {
