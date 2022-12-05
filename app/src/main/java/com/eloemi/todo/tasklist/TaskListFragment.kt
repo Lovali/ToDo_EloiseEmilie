@@ -5,15 +5,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.RecyclerView
+import androidx.lifecycle.lifecycleScope
 import com.eloemi.todo.R
+import com.eloemi.todo.data.Api
 import com.eloemi.todo.databinding.FragmentTaskListBinding
 import com.eloemi.todo.detail.DetailActivity
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import java.util.*
+import kotlinx.coroutines.launch
 
 class TaskListFragment : Fragment() {
     private var taskList = listOf(
@@ -82,5 +82,17 @@ class TaskListFragment : Fragment() {
         }
 
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        lifecycleScope.launch {
+            mySuspendMethod()
+        }
+    }
+
+    private suspend fun mySuspendMethod() {
+        val user = Api.userWebService.fetchUser().body()!!
+        view?.findViewById<TextView>(R.id.userTextView)?.text = user.name
     }
 }
