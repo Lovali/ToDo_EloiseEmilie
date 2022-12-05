@@ -5,11 +5,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import coil.load
+import coil.transform.CircleCropTransformation
 import com.eloemi.todo.R
 import com.eloemi.todo.data.Api
 import com.eloemi.todo.databinding.FragmentTaskListBinding
@@ -102,6 +105,9 @@ class TaskListFragment : Fragment() {
             mySuspendMethod()
         }
         viewModel.refresh()
+        view?.findViewById<ImageView>(R.id.imageView)?.load("https://goo.gl/gEgYUd") {
+            transformations(CircleCropTransformation())
+        }
     }
 
     private suspend fun mySuspendMethod() {
