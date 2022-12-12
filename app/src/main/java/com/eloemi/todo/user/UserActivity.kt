@@ -4,13 +4,17 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.launch
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -23,8 +27,11 @@ class UserActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ToDoEloiseEmilieTheme {
-                val bitmap: Bitmap? by remember { mutableStateOf(null) }
+                var bitmap: Bitmap? by remember { mutableStateOf(null) }
                 val uri: Uri? by remember { mutableStateOf(null) }
+                val takePicture = rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) {
+                    bitmap = it
+                }
                 Column {
                     AsyncImage(
                         modifier = Modifier.fillMaxHeight(.2f),
@@ -32,7 +39,7 @@ class UserActivity : ComponentActivity() {
                         contentDescription = null
                     )
                     Button(
-                        onClick = {},
+                        onClick = {takePicture.launch()},
                         content = { Text("Take picture") }
                     )
                     Button(
