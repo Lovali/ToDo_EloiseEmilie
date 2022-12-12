@@ -55,6 +55,32 @@ class UserActivity : ComponentActivity() {
             }
         }
     }
+
+    private fun Bitmap.toRequestBody(): MultipartBody.Part {
+        val tmpFile = File.createTempFile("avatar", "jpg")
+        tmpFile.outputStream().use { // *use* se charge de faire open et close
+            this.compress(Bitmap.CompressFormat.JPEG, 100, it) // *this* est le bitmap ici
+        }
+        return MultipartBody.Part.createFormData(
+            name = "avatar",
+            filename = "avatar.jpg",
+            body = tmpFile.readBytes().toRequestBody()
+        )
+    }
+
+    private fun Uri.toRequestBody(): MultipartBody.Part {
+        val fileInputStream = contentResolver.openInputStream(this)!!
+        val fileBody = fileInputStream.readBytes().toRequestBody()
+        return MultipartBody.Part.createFormData(
+            name = "avatar",
+            filename = "avatar.jpg",
+            body = fileBody
+        )
+    }
+
+    private suspend fun avatar(bitmap: MultipartBody.Part) {
+        Api.userWebService.updateAvatar(bitmap)
+    }
 }
 
 @Composable
@@ -68,20 +94,4 @@ fun DefaultPreview() {
     ToDoEloiseEmilieTheme {
         Greeting("Android")
     }
-}
-
-private fun Bitmap.toRequestBody(): MultipartBody.Part {
-    val tmpFile = File.createTempFile("avatar", "jpg")
-    tmpFile.outputStream().use { // *use* se charge de faire open et close
-        this.compress(Bitmap.CompressFormat.JPEG, 100, it) // *this* est le bitmap ici
-    }
-    return MultipartBody.Part.createFormData(
-        name = "avatar",
-        filename = "avatar.jpg",
-        body = tmpFile.readBytes().toRequestBody()
-    )
-}
-
-private suspend fun avatar(bitmap: MultipartBody.Part) {
-    Api.userWebService.updateAvatar(bitmap)
 }
