@@ -5,4 +5,5 @@
     <string name="delete_button">Delete task</string>
     <string name="title_activity_detail">DetailActivity</string>
     <string name="edit_button">Edit task</string>
+    <string name="title_activity_user">UserActivity</string>
 </resources>

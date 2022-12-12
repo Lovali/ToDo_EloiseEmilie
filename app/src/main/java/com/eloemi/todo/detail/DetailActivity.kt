@@ -1,6 +1,5 @@
 package com.eloemi.todo.detail
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,8 +12,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.eloemi.todo.data.tasklist.Task
 import com.eloemi.todo.detail.ui.theme.ToDoEloiseEmilieTheme
-import com.eloemi.todo.tasklist.Task
 import java.util.*
 
 class DetailActivity : ComponentActivity() {

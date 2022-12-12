@@ -7,7 +7,7 @@
     tools:context=".MainActivity">
 
     <androidx.fragment.app.FragmentContainerView
-        android:name="com.eloemi.todo.tasklist.TaskListFragment"
+        android:name="com.eloemi.todo.data.tasklist.TaskListFragment"
         android:id="@+id/fragment_tasklist"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
