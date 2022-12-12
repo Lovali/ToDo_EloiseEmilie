@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.launch
 import androidx.compose.foundation.layout.Column
@@ -30,12 +31,21 @@ class UserActivity : ComponentActivity() {
         setContent {
             ToDoEloiseEmilieTheme {
                 var bitmap: Bitmap? by remember { mutableStateOf(null) }
-                val uri: Uri? by remember { mutableStateOf(null) }
+                var uri: Uri? by remember { mutableStateOf(null) }
                 val takePicture = rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) {
                     bitmap = it
                     lifecycleScope.launch {
-                        bitmap?.let { it1 -> avatar(it1.toRequestBody()) }
+                        bitmap?.toRequestBody()
                     }
+                }
+                val pickPhoto = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) {
+                    uri = it
+                    lifecycleScope.launch {
+                        uri?.toRequestBody()
+                    }
+                }
+                val pickPhotoPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
+                    pickPhoto.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                 }
                 Column {
                     AsyncImage(
@@ -44,11 +54,11 @@ class UserActivity : ComponentActivity() {
                         contentDescription = null
                     )
                     Button(
-                        onClick = {takePicture.launch()},
+                        onClick = { takePicture.launch() },
                         content = { Text("Take picture") }
                     )
                     Button(
-                        onClick = {},
+                        onClick = { pickPhotoPermission.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE) },
                         content = { Text("Pick photo") }
                     )
                 }
