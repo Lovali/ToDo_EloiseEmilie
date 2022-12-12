@@ -12,7 +12,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import coil.load
-import coil.transform.CircleCropTransformation
 import com.eloemi.todo.R
 import com.eloemi.todo.data.Api
 import com.eloemi.todo.databinding.FragmentTaskListBinding
@@ -113,13 +112,16 @@ class TaskListFragment : Fragment() {
             mySuspendMethod()
         }
         viewModel.refresh()
-        view?.findViewById<ImageView>(R.id.imageView)?.load("https://goo.gl/gEgYUd") {
+        /*view?.findViewById<ImageView>(R.id.imageView)?.load("https://goo.gl/gEgYUd") {
             transformations(CircleCropTransformation())
-        }
+        }*/
     }
 
     private suspend fun mySuspendMethod() {
         val user = Api.userWebService.fetchUser().body()!!
         view?.findViewById<TextView>(R.id.userTextView)?.text = user.name
+        view?.findViewById<ImageView>(R.id.imageView)?.load(user.avatar) {
+            error(R.drawable.ic_launcher_background) // image par défaut en cas d'erreur
+        }
     }
 }
