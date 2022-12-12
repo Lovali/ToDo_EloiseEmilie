@@ -1,14 +1,15 @@
 package com.eloemi.todo.user
 
+import android.content.ContentValues
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.launch
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.material.Button
@@ -26,17 +27,24 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 
 class UserActivity : ComponentActivity() {
+    private val capturedUri by lazy {
+        contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, ContentValues())
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             ToDoEloiseEmilieTheme {
                 var bitmap: Bitmap? by remember { mutableStateOf(null) }
                 var uri: Uri? by remember { mutableStateOf(null) }
-                val takePicture = rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) {
+                /*val takePicture = rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) {
                     bitmap = it
                     lifecycleScope.launch {
                         bitmap?.toRequestBody()
                     }
+                }*/
+                val takePicture = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+                    if (success) uri = capturedUri
                 }
                 val pickPhoto = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) {
                     uri = it
@@ -54,7 +62,7 @@ class UserActivity : ComponentActivity() {
                         contentDescription = null
                     )
                     Button(
-                        onClick = { takePicture.launch() },
+                        onClick = { takePicture.launch(capturedUri) },
                         content = { Text("Take picture") }
                     )
                     Button(
