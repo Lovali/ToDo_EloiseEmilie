@@ -17,6 +17,7 @@ import com.eloemi.todo.data.Api
 import com.eloemi.todo.databinding.FragmentTaskListBinding
 import com.eloemi.todo.detail.DetailActivity
 import com.eloemi.todo.user.UserActivity
+import com.eloemi.todo.user.UserViewModel
 import kotlinx.coroutines.launch
 
 class TaskListFragment : Fragment() {
@@ -54,9 +55,13 @@ class TaskListFragment : Fragment() {
         viewModel.refresh()
     }
     val editProfile = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-
+        /*lifecycleScope.launch {
+            editProfileSuspend()
+        }
+        viewModelUser.refresh()*/
     }
     private val viewModel: TasksListViewModel by viewModels()
+    private val viewModelUser : UserViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -94,7 +99,7 @@ class TaskListFragment : Fragment() {
         }
         binding.imageView.setOnClickListener {
             val intent = Intent(context, UserActivity::class.java)
-            editTask.launch(intent)
+            editProfile.launch(intent)
         }
         lifecycleScope.launch { // on lance une coroutine car `collect` est `suspend`
             viewModel.tasksStateFlow.collect { newList ->
@@ -124,4 +129,9 @@ class TaskListFragment : Fragment() {
             error(R.drawable.ic_launcher_background) // image par défaut en cas d'erreur
         }
     }
+
+    /*private suspend fun editProfileSuspend() {
+        val user = Api.userWebService.fetchUser().body()!!
+        viewModelUser.edit(user)
+    }*/
 }

@@ -10,9 +10,12 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.material.Button
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -20,6 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.lifecycleScope
 import coil.compose.AsyncImage
 import com.eloemi.todo.data.Api
+import com.eloemi.todo.data.User
 import com.eloemi.todo.user.ui.theme.ToDoEloiseEmilieTheme
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
@@ -30,32 +34,38 @@ class UserActivity : ComponentActivity() {
     private val capturedUri by lazy {
         contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, ContentValues())
     }
+    private val viewModelUser : UserViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModelUser.refresh()
+        val onValidate = { user : User -> Unit
+            viewModelUser.edit(user)
+            finish()
+        }
         setContent {
             ToDoEloiseEmilieTheme {
                 var bitmap: Bitmap? by remember { mutableStateOf(null) }
                 var uri: Uri? by remember { mutableStateOf(null) }
-                /*val takePicture = rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) {
-                    bitmap = it
-                    lifecycleScope.launch {
-                        bitmap?.toRequestBody()
-                    }
-                }*/
                 val takePicture = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
                     if (success) uri = capturedUri
+                    lifecycleScope.launch {
+                        avatar(uri.toRequestBody())
+                    }
                 }
                 val pickPhoto = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) {
                     uri = it
                     lifecycleScope.launch {
-                        uri?.toRequestBody()
+                        avatar(uri.toRequestBody())
                     }
                 }
                 val pickPhotoPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
                     pickPhoto.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                 }
+                val user by viewModelUser.userStateFlow.collectAsState()
+                var userModified by remember(user) { mutableStateOf(user) }
                 Column {
+                    Text("User detail", style = MaterialTheme.typography.h3)
                     AsyncImage(
                         modifier = Modifier.fillMaxHeight(.2f),
                         model = bitmap ?: uri,
@@ -69,6 +79,20 @@ class UserActivity : ComponentActivity() {
                         onClick = { pickPhotoPermission.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE) },
                         content = { Text("Pick photo") }
                     )
+                    OutlinedTextField(
+                        value = userModified.name  ,
+                        onValueChange = {userModified = userModified.copy(name = it)},
+                        label = { Text(text = "Name")}
+                    )
+                    OutlinedTextField(
+                        value = userModified?.email ?: "jean.dupont@gmail.com",
+                        onValueChange = {userModified = userModified.copy(email = it)},
+                        label = { Text(text = "Email")}
+                    )
+                    Button(
+                        onClick = { onValidate(userModified) } ) {
+                            Text("Validate")
+                        }
                 }
             }
         }
@@ -86,8 +110,8 @@ class UserActivity : ComponentActivity() {
         )
     }
 
-    private fun Uri.toRequestBody(): MultipartBody.Part {
-        val fileInputStream = contentResolver.openInputStream(this)!!
+    private fun Uri?.toRequestBody(): MultipartBody.Part {
+        val fileInputStream = this?.let { contentResolver.openInputStream(it) }!!
         val fileBody = fileInputStream.readBytes().toRequestBody()
         return MultipartBody.Part.createFormData(
             name = "avatar",
