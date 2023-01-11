@@ -20,6 +20,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import coil.compose.AsyncImage
 import com.eloemi.todo.data.Api
@@ -63,6 +64,7 @@ class UserActivity : ComponentActivity() {
                     pickPhoto.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                 }
                 val user by viewModelUser.userStateFlow.collectAsState()
+                if (uri == null) uri = user.avatar?.toUri()
                 var userModified by remember(user) { mutableStateOf(user) }
                 Column {
                     Text("User detail", style = MaterialTheme.typography.h3)

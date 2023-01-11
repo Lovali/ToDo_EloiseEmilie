@@ -6,9 +6,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Task (
     @SerialName("id")
-    val id : String,
+    val id : String = "default id",
     @SerialName("content")
-    val title: String,
+    val title: String = "default title",
     @SerialName("description")
     val description: String = "default description"
 ) : java.io.Serializable

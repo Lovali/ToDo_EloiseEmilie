@@ -43,14 +43,14 @@ class TaskListFragment : Fragment() {
     private val adapter = TaskListAdapter(adapterListener)
     private lateinit var binding : FragmentTaskListBinding
     val createTask = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        val task = result.data?.getSerializableExtra("task") as Task
-        viewModel.add(task)
+        val task = result.data?.getSerializableExtra("task") as Task?
+        if (task != null) viewModel.add(task)
         //taskList = (taskList + task!!)
         viewModel.refresh()
     }
     val editTask = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        val task = result.data?.getSerializableExtra("task") as Task
-        viewModel.edit(task)
+        val task = result.data?.getSerializableExtra("task") as Task?
+        if (task != null) viewModel.edit(task)
         //taskList = taskList.map { if (it.id == task.id) task else it }
         viewModel.refresh()
     }
