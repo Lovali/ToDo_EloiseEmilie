@@ -11,15 +11,19 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import coil.compose.AsyncImage
@@ -66,7 +70,11 @@ class UserActivity : ComponentActivity() {
                 val user by viewModelUser.userStateFlow.collectAsState()
                 if (uri == null) uri = user.avatar?.toUri()
                 var userModified by remember(user) { mutableStateOf(user) }
-                Column {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
                     Text("User detail", style = MaterialTheme.typography.h3)
                     AsyncImage(
                         modifier = Modifier.fillMaxHeight(.2f),
@@ -95,6 +103,7 @@ class UserActivity : ComponentActivity() {
                         onClick = { onValidate(userModified) } ) {
                             Text("Validate")
                         }
+
                 }
             }
         }

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -42,7 +43,7 @@ class DetailActivity : ComponentActivity() {
 @Composable
 fun Detail(onValidate: (Task?) -> Unit, initialTask: Task?) {
     var task by remember { mutableStateOf(initialTask) } // faire les imports suggérés par l'IDE
-    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    Column(Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text("Task Detail", style = MaterialTheme.typography.h3)
         OutlinedTextField(value = task?.id ?: UUID.randomUUID().toString(), onValueChange = {task = task?.copy(id = it)}, label = { Text(text = "Id")})
         OutlinedTextField(value = task?.title ?:"New task", onValueChange = {task = task?.copy(title = it)}, label = { Text(text = "Title")})
